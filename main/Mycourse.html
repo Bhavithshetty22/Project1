@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            display: flex;
+            justify-content: flex-end; /* Align leaderboard to the right */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 50px; /* Add some spacing */
+            background-color: #f0f0f0;
+        }
+        .leaderboard {
+            width: 300px;
+            height: auto;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: whitesmoke;
+            color: black;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .leaderboard h2 {
+            margin: 0 0 15px;
+            text-align: center;
+        }
+        .leaderboard ol {
+            list-style: none;
+            padding: 0;
+        }
+        .leaderboard li {
+            background-color: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            display: block; /* Make each entry a block */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="leaderboard">
+        <h2>Time Spent</h2>
+        <ol id="leaderboard-list">
+            <!-- Leaderboard will be populated here -->
+        </ol>
+    </div>
+
+    <script>
+        // Simulated student names
+        const students = ["John Doe", "Jane Smith", "Emily Johnson", "Michael Brown", "Chris Evans"];
+
+        // Retrieve existing times or initialize with random times
+        let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || {};
+        students.forEach(student => {
+            if (!leaderboard[student]) {
+                leaderboard[student] = Math.floor(Math.random() * 30); // Assign random time between 0-30 min
+            }
+        });
+
+        // Simulate a logged-in user (random selection from students list)
+        let currentUser = students[Math.floor(Math.random() * students.length)];
+        let startTime = Date.now();
+
+        // Update time spent when the user leaves
+        window.addEventListener("beforeunload", () => {
+            let timeSpent = Math.floor((Date.now() - startTime) / 1000 / 60); // Convert ms to minutes
+            leaderboard[currentUser] += timeSpent;
+            localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+        });
+
+        // Function to update leaderboard display
+        function updateLeaderboard() {
+            let list = document.getElementById("leaderboard-list");
+            list.innerHTML = "";
+
+            // Sort students by time spent in descending order
+            let sortedUsers = Object.entries(leaderboard).sort((a, b) => b[1] - a[1]);
+
+            sortedUsers.forEach(([name, time]) => {
+                let li = document.createElement("li");
+                li.textContent = ${name} - ${time} min;
+                list.appendChild(li);
+            });
+        }
+
+        // Initial leaderboard update
+        updateLeaderboard();
+    </script>
+
+</body>
+</html>
